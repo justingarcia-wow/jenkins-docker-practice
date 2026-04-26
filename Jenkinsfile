@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     // Acá le decimos a Jenkins que busque las credenciales guardadas
+    // Jenkins crea automáticamente dos variables: DOCKERHUB_CREDS_USR y DOCKERHUB_CREDS_PSW
     environment {
         DOCKERHUB_CREDS = credentials('dockerhub-creds')
     }
@@ -19,8 +20,9 @@ pipeline {
         stage('Build y Push a Docker Hub') {
             steps {
                 sh '''
-                    echo "Iniciando push..."
-                    docker login -u justing0 -p ${DOCKERHUB_TOKEN_PSW}
+                    echo "Iniciando login a Docker Hub..."
+                    docker login -u ${DOCKERHUB_CREDS_USR} -p ${DOCKERHUB_CREDS_PSW}
+                    echo "Construyendo y subiendo imagen..."
                     docker buildx build --platform linux/amd64 -t justing0/hello-python:latest --push .
                 '''
             }

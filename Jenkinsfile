@@ -1,31 +1,33 @@
 pipeline {
     agent any
 
+    // Acá le decimos a Jenkins que busque las credenciales guardadas
+    environment {
+        DOCKERHUB_TOKEN = credentials('dockerhub-creds')
+    }
+
     stages {
 
+        // Primera etapa: bajamos el código de GitHub a Jenkins
         stage('Clonar repositorio') {
             steps {
                 checkout scm
             }
         }
 
+        // Segunda etapa: construimos y subimos la imagen a Docker Hub
         stage('Build y Push a Docker Hub') {
             steps {
-                // Usamos las credenciales guardadas en Jenkins, nunca la contraseña directa
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'USER',
-                    passwordVariable: 'PASS'
-                )]) {
-                    // Login a Docker Hub con el token
-                    sh 'echo $PASS | docker login -u $USER --password-stdin'
-                    // Construye para Linux 64 bits y sube directo a Docker Hub
-                    sh 'docker buildx build --platform linux/amd64 -t justing0/hello-python:latest --push .'
-                }
+                sh '''
+                    echo "Iniciando push..."
+                    docker login -u justing0 -p ${DOCKERHUB_TOKEN_PSW}
+                    docker buildx build --platform linux/amd64 -t justing0/hello-python:latest --push .
+                '''
             }
         }
     }
 
+    // Esto se ejecuta siempre al final, salga bien o mal
     post {
         success {
             echo 'Imagen subida exitosamente a Docker Hub'

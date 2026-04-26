@@ -16,7 +16,7 @@ pipeline {
         stage('Build imagen Docker') {
             steps {
                 // -t le pone nombre a la imagen, el punto busca el Dockerfile en la carpeta actual
-                sh 'docker build -t justing0/hello-python:latest .'
+                sh 'docker buildx build --platform linux/amd64 -t justing0/hello-python:latest --push .'
             }
         }
 

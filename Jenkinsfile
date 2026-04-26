@@ -3,7 +3,7 @@ pipeline {
 
     // Acá le decimos a Jenkins que busque las credenciales guardadas
     environment {
-        DOCKERHUB_TOKEN = credentials('dockerhub-creds')
+        DOCKERHUB_CREDS = credentials('dockerhub-creds')
     }
 
     stages {

@@ -23,12 +23,20 @@ pipeline {
         }
     }
 
-    post {
-        success {
-            echo 'Imagen subida exitosamente a Docker Hub'
-        }
-        failure {
-            echo 'Algo falló'
-        }
+post {
+    success {
+        sh """
+            curl -s -X POST https://api.telegram.org/bot8627044263:AAH-w3w2Ixub5hcrk2JEoqo2bQ6t6BQB1PI/sendMessage \
+            -d chat_id=1221106616 \
+            -d text='✅ Pipeline exitoso: hello-python fue construida y subida a Docker Hub'
+        """
     }
+    failure {
+        sh """
+            curl -s -X POST https://api.telegram.org/bot8627044263:AAH-w3w2Ixub5hcrk2JEoqo2bQ6t6BQB1PI/sendMessage \
+            -d chat_id=1221106616 \
+            -d text='❌ Pipeline fallido: algo salió mal en hello-python'
+        """
+    }
+}
 }
